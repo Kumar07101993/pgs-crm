@@ -1,0 +1,18 @@
+-- CreateTable
+CREATE TABLE `CallLog` (
+    `id` VARCHAR(191) NOT NULL,
+    `leadId` INTEGER NULL,
+    `userId` VARCHAR(191) NULL,
+    `callType` VARCHAR(191) NOT NULL,
+    `duration` INTEGER NOT NULL DEFAULT 0,
+    `status` VARCHAR(191) NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- AddForeignKey
+ALTER TABLE `CallLog` ADD CONSTRAINT `CallLog_leadId_fkey` FOREIGN KEY (`leadId`) REFERENCES `Lead`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `CallLog` ADD CONSTRAINT `CallLog_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;

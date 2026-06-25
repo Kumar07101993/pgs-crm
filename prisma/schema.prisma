@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String @id @default(cuid())
+  name     String
+  email    String @unique
+  password String
+  role     String
+
+  salesGroupId String?
+  salesGroup   SalesGroup? @relation(fields: [salesGroupId], references: [id])
+
+  leadsCreated  Lead[]    @relation("CreatedLeads")
+  leadsAssigned Lead[]    @relation("AssignedLeads")
+  callLogs      CallLog[]
+  createdAt     DateTime  @default(now())
+}
+
+model SalesGroup {
+  id   String @id @default(cuid())
+  name String
+
+  users User[]
+
+  createdAt DateTime @default(now())
+}
+
+model LeadList {
+  id   String @id @default(cuid())
+  name String
+
+  createdById String
+
+  createdAt DateTime @default(now())
+
+  leads Lead[]
+}
+
+model Lead {
+  id Int @id @default(autoincrement())
+
+  customerName String
+  phone        String
+
+  address    String?
+  leadSource String?
+  city       String?
+  district   String?
+
+  builderName String?
+  salesman    String?
+
+  remarks String?
+
+  createdById String?
+  createdBy   User?   @relation("CreatedLeads", fields: [createdById], references: [id])
+
+  assignedToId String?
+  assignedTo   User?   @relation("AssignedLeads", fields: [assignedToId], references: [id])
+
+  listId    String?
+  list      LeadList? @relation(fields: [listId], references: [id])
+  callLogs  CallLog[]
+  createdAt DateTime  @default(now())
+}
+
+model CallLog {
+  id String @id @default(cuid())
+
+  leadId Int?
+  userId String?
+
+  callType String
+  // incoming | outgoing | missed
+
+  duration Int @default(0)
+  // seconds
+
+  status String?
+  // connected | attempted | missed
+
+  createdAt DateTime @default(now())
+
+  lead Lead? @relation(fields: [leadId], references: [id])
+  user User? @relation(fields: [userId], references: [id])
+}
